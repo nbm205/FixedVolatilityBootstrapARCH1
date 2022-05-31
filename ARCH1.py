@@ -46,7 +46,6 @@ def hessian(x, omega, alpha):
 
 def optimize(x,omega):
     """Solver for non-linear MLE"""
-    # Likelihood, gradient and hessian as functions of alpha only (necessary for optimizer). 
     fll = lambda alpha: ll(x, omega,alpha) 
     alpha_hat = minimize_scalar(fll,bounds=(0.001,100), method='bounded')
     return alpha_hat.x
@@ -106,7 +105,7 @@ def bootstrap_hessian(x, x_star, omega, alpha):
 
 
 def bootstrap_optimize(x,x_star,omega):
-    # Likelihood, gradient and hessian as functions of alpha only (necessary for optimizer). 
+    """Solver for non-linear Bootstrap MLE"""
     fll_star = lambda alpha: bootstrap_ll(x,x_star, omega,alpha) 
     alpha_hat_star = minimize_scalar(fll_star,bounds=(0.001,100), method='bounded')
     return alpha_hat_star.x
@@ -159,10 +158,10 @@ def montecarlo(T):
         LR_test = LRtest(x,omega,alpha_hat,alpha_bar)
         p_val_array_classic[n] = 1-stats.chi2.cdf(LR_test,1)
         LR_stat_array[n] = LR_test
-        # Compute sigma2_est once for both iid and wild
+        # Compute sigma2_est
         sigma2_est = sigma2_estimate(x,omega,alpha_hat)
         # # IID Bootstrap
-        LR_array_iid = bootstrap_simulate(x,sigma2_est,B,alpha_hat) # slow 
+        LR_array_iid = bootstrap_simulate(x,sigma2_est,B,alpha_hat)
         p_val_array_iid[n] = bootstrap_p_value(LR_test,LR_array_iid,B)
     erf_classic = ERF(p_val_array_classic,N) 
     erf_iid = ERF(p_val_array_iid,N)
